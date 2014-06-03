@@ -1,0 +1,55 @@
+# directory stack
+alias cd="pushd &> /dev/null"
+alias bd="popd"
+alias cdclear="dirs -c"
+
+# back one directory
+alias cd..="cd .."
+alias ..="cd.."
+
+# back two directories
+alias cd...="cd ../.."
+alias ...="cd..."
+
+# back three directories
+alias cd....="cd ../../.."
+alias ....="cd...."
+
+# back four directories
+alias cd.....="cd ../../../.."
+alias .....="cd....."
+
+# back five directories
+alias cd......="cd ../../../../.."
+alias ......="cd......"
+
+alias rm="trash"
+alias reload=". ~/.bash_profile"
+
+# List all files colorized in long format, including dot files
+alias la="ls -Gla"
+
+# List only directores
+alias lsd='ls -l | grep "^d"'
+
+# Undo a `git push`
+alias undopush="git push -f origin HEAD^:master"
+
+alias ip="ifconfig -a | perl -nle'/(\d+\.\d+\.\d+.\d+)/ && print $1'"
+alias listeners="lsof -iTCP -sTCP:LISTEN"
+
+# size and size-bin
+alias size-bin='size'
+alias size='du -sh'
+
+# One of @janmoesen’s ProTip™s
+for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
+    alias "$method"="lwp-request -m '$method'"
+done
+
+
+alias noded="node --trace_osr --array_index_dehoisting --trace_bailout --trace_gc --trace_gc_verbose  --trace_exception --log_gc --prof --log_regexp"
+alias nodec="node --crankshaft --trace_opt --use_osr --trace_osr --trace_bailout --trace_exception --trace_gc --log_regexp --log_gc --log_suspect --log_code"
+
+# The syn/ack tweak on the end pulled from http://naleid.com/blog/2008/04/03/monitoring-http-traffic-to-debug-your-grails-application/
+alias tcpd3443="sudo tcpdump -s 0 -A -i lo0 'tcp port 3443 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'"

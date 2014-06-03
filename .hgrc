@@ -1,0 +1,7 @@
+[ui]
+username = Jim Schubert <james.schubert@gmail.com>
+
+[extensions]
+hgext.bookmarks =
+hggit =
+fetch = 

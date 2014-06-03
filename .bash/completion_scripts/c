@@ -1,0 +1,19 @@
+# file c
+# see http://unix.stackexchange.com/questions/11906/how-to-change-the-target-directory-for-tab-completion
+
+_c ()
+{
+    local cur
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+
+    # echo $(ls -d /home/jim/projects/[$cur]*)
+    case "$cur" in
+        *)
+            COMPREPLY=( $(compgen -f $HOME/projects/$cur | cut -d"/" -f5 ) )
+            ;;
+    esac
+
+    return 0
+} &&
+complete -o filenames -F _c c

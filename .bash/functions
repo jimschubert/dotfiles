@@ -1,0 +1,110 @@
+function c { cd ~/projects/$1; }
+function md { mkdir -p "$@" && cd "$@"; }
+
+# taken from https://github.com/matthewmccullough/dotfiles/blob/master/shellaliases
+function matrix {
+echo -e "\e[1;40m" ; clear ; while :; do echo $LINES $COLUMNS $(( $RANDOM % $COLUMNS)) $(( $RANDOM % 72 )) ;sleep 0.05; done|gawk '{ letters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()"; c=$4; letter=substr(letters,c,1);a[$3]=0;for (x in a) {o=a[x];a[x]=a[x]+1; printf "\033[%s;%sH\033[2;32m%s",o,x,letter; printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,letter;if (a[x] >= $1) { a[x]=0; } }}'
+}
+
+# test markdown files, probably a better way to test for programs.
+function md.view {
+    local i=true
+    type -p markdown &> /dev/null || i=false
+    if $i ; then 
+        local output="/tmp/md.view-$(date +%F).html";
+        markdown $1 > "$output";
+        google-chrome "$output"; # xdg-open would open default browser after remove line below runs :(
+        rm "$output";
+    else
+        echo "markdown is not installed"
+    fi
+}
+
+# multiline, case-insensitive grepping (modified from sed & awk O'Reilly book ~pg 138)
+function phrase {
+    if [[ ( -f "$1" ) || ( ! -f "$2" ) || ( $(echo "$1") == "" ) ]] ; then
+        echo 'usage: phrase "search term" filename';
+    fi
+    search=$1
+    shift
+    for file ; do
+        sed "/$search/Ib;N;h;s/.*\n//;/$search/Ib;g;s/ *\n/ /;/$search/I{g;b;};g;D;" $file
+    done
+}
+
+# gracias, @mathiasbynens
+function json() {
+    if [ -p /dev/stdin ] ; then
+        python -mjson.tool
+    else
+        python -mjson.tool <<< "$@"
+    fi
+}
+
+# serve the current directory
+function serve() {
+    python -m SimpleHTTPServer
+}
+
+function couch-get() {
+    curl -s -X GET $@ 2>&1
+}
+
+function couch-put() {
+    curl -s -X PUT $@ 2>&1
+}
+
+function couch-post() {
+    curl -s -X POST $@ 2>&1
+}
+
+function couch-delete() {
+    curl -s -X DELETE $@ 2>&1
+}
+
+function title() {
+    echo -n -e "\033]0;$1\007"
+}
+
+# use like this in a directory with code you want MIT-licensed: MIT > LICENSE
+function MIT() {
+cat <<EOF
+(The MIT License)
+
+Copyright (c) `echo $(date +"%Y")` `echo $USER` <user@email.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+EOF
+}
+
+
+# Install specific version of Homebrew formula
+# usage example:
+# $ brew-install ssh-copy-id 6.0p1
+# TODO: add darwin check
+function brew-install {
+  local formula version formula_hash
+  formula=$1
+  version=$2
+
+  cd `brew --prefix`
+  git_last_commit_id=`git rev-parse --short HEAD`
+
+  formula_hash=`brew versions $formula|grep $version|awk '{print $4}'`
+
+  echo brew install $formula with version $version $formula_hash
+
+  git pull
+  git checkout $formula_hash Library/Formula/$formula.rb
+
+	brew unlink $formula
+  brew install $formula
+  brew switch $formula $version
+  git checkout $git_last_commit_id Library/Formula/$formula.rb   # reset formula
+
+  cd - # got back to previous dir
+}
