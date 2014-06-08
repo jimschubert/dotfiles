@@ -108,3 +108,10 @@ function brew-install {
 
   cd - # got back to previous dir
 }
+
+# from http://www.reddit.com/r/linux/comments/27buyv/i_just_leaned_about_man_html/
+# Parses manpage for a command's option description
+# usage manopt man t
+function manopt {
+    man $1 | sed 's/.\x08//g' | sed -n "/^\s\+-\+$2\b/,/^\s*$/p" | sed '$d;';
+}
