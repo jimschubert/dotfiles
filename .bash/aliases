@@ -53,3 +53,12 @@ alias nodec="node --crankshaft --trace_opt --use_osr --trace_osr --trace_bailout
 
 # The syn/ack tweak on the end pulled from http://naleid.com/blog/2008/04/03/monitoring-http-traffic-to-debug-your-grails-application/
 alias tcpd3443="sudo tcpdump -s 0 -A -i lo0 'tcp port 3443 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'"
+
+# config set, for local git tracking of configuration files.
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+
+alias java.debug.enable='export JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=5009,suspend=y"'
+alias java.debug.disable='export JAVA_OPTS=""'
+
+# http://www.howardism.org/Technical/Linux/tmux.html
+alias t='tmux -CC attach || tmux -CC'
