@@ -115,3 +115,15 @@ function brew-install {
 function manopt {
     man $1 | sed 's/.\x08//g' | sed -n "/^\s\+-\+$2\b/,/^\s*$/p" | sed '$d;';
 }
+
+function docker.cleanup {
+    docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+}
+
+function docker.remove.stopped {
+    docker rm $(docker ps -a -q)
+}
+
+function docker-compose.annihilate {
+    docker-compose stop $1 && docker-compose rm -f $1
+}
